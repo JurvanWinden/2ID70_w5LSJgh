@@ -1,4 +1,4 @@
-CREATE UNLOGGED TABLE (
+CREATE UNLOGGED TABLE TeacherAssignmentsToCourses (
     CourseOfferId INT,
     TeacherId INT
 );
