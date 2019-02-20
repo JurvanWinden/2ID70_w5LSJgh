@@ -8,25 +8,25 @@
 -- Don't forget to analyze at the end. It can make a difference in query performance.
 
 -- Define your path here for testing purposes...
-DEFINE path = "/home/jur/Documents/2ID70/tables-light/tables/"
+\set path '/home/jur/Documents/2ID70/tables-light/tables/';
 -- DEFINE path = "/mnt/ramdisk/tables/"
 
-COPY Courses(CourseId, CourseName, CourseDescription, DegreeId, ECTS) FROM path + 'Courses.table' DELIMITER ',' CSV HEADER;
+COPY Courses(CourseId, CourseName, CourseDescription, DegreeId, ECTS) FROM '/home/jur/Documents/2ID70/tables-light/tables/Courses.table' DELIMITER ',' CSV HEADER;
 
-COPY CourseOffers(CourseOfferId, CourseId, Year, Quartile) FROM '/mnt/ramdisk/tables/CourseOffers.table' DELIMITER ',' CSV HEADER;
+COPY CourseOffers(CourseOfferId, CourseId, Year, Quartile) FROM '/home/jur/Documents/2ID70/tables-light/tables/CourseOffers.table' DELIMITER ',' CSV HEADER;
 
-COPY TeacherAssignmentsToCourses(CourseOfferId, TeacherId) FROM '/mnt/ramdisk/tables/TeacherAssignmentsToCourses.table' DELIMITER ',' CSV HEADER;
+COPY TeacherAssignmentsToCourses(CourseOfferId, TeacherId) FROM '/home/jur/Documents/2ID70/tables-light/tables/TeacherAssignmentsToCourses.table' DELIMITER ',' CSV HEADER;
 
-COPY StudentAssistants(CourseOfferId, StudentRegistrationId) FROM '/mnt/ramdisk/tables/StudentAssistants.table' DELIMITER ',' CSV HEADER;
+COPY StudentAssistants(CourseOfferId, StudentRegistrationId) FROM '/home/jur/Documents/2ID70/tables-light/tables/StudentAssistants.table' DELIMITER ',' CSV HEADER;
 
-COPY CourseRegistrations(CourseOfferId, StudentRegistrationId, Grade) FROM '/mnt/ramdisk/tables/CourseRegistrations.table' DELIMITER ',' CSV HEADER;
+COPY CourseRegistrations(CourseOfferId, StudentRegistrationId, Grade) FROM '/home/jur/Documents/2ID70/tables-light/tables/CourseRegistrations.table' DELIMITER ',' CSV HEADER;
 
-COPY Degrees(DegreeId, Dept, DegreeDescription, TotalECTS) FROM '/mnt/ramdisk/tables/Degrees.table' DELIMITER ',' CSV HEADER;
+COPY Degrees(DegreeId, Dept, DegreeDescription, TotalECTS) FROM '/home/jur/Documents/2ID70/tables-light/tables/Degrees.table' DELIMITER ',' CSV HEADER;
 
-COPY Students(StudentId, StudentName, Address, BirthyearStudent, Gender) FROM '/mnt/ramdisk/tables/Students.table' DELIMITER ',' CSV HEADER;
+COPY Students(StudentId, StudentName, Address, BirthyearStudent, Gender) FROM '/home/jur/Documents/2ID70/tables-light/tables/Students.table' DELIMITER ',' CSV HEADER;
 
-COPY StudentRegistrationsToDegrees(StudentRegistrationId, StudentId, DegreeId, RegistrationYear) FROM '/mnt/ramdisk/tables/StudentRegistrationsToDegrees.table' DELIMITER ',' CSV HEADER;
+COPY StudentRegistrationsToDegrees(StudentRegistrationId, StudentId, DegreeId, RegistrationYear) FROM '/home/jur/Documents/2ID70/tables-light/tables/StudentRegistrationsToDegrees.table' DELIMITER ',' CSV HEADER;
 
-COPY Teachers(TeacherId, TeacherName, Address, BirthyearTeacher, Gender) FROM '/mnt/ramdisk/tables/Teachers.table' DELIMITER ',' CSV HEADER;
+COPY Teachers(TeacherId, TeacherName, Address, BirthyearTeacher, Gender) FROM '/home/jur/Documents/2ID70/tables-light/tables/Teachers.table' DELIMITER ',' CSV HEADER;
 
 ANALYZE VERBOSE;
