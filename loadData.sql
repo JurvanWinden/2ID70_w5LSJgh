@@ -6,8 +6,17 @@
 --   StudentAssistants.table, StudentRegistrationsToDegrees.table, Students.table
 --   TeacherAssignmentsToCourses.table, Teachers.table
 -- Don't forget to analyze at the end. It can make a difference in query performance.
--- Example:
 
-COPY myPhonebook(id, name, address,phoneNumber) FROM '/mnt/ramdisk/tables/myphonebook.table' DELIMITER ',' CSV HEADER;
+
+
+COPY Courses(CourseId, CourseName, CourseDescription, DegreeId, ECTS) FROM '/mnt/ramdisk/tables/Courses.table' DELIMITER ',' CSV HEADER;
+
+COPY CourseOffers(CourseOfferId, CourseId, Year, Quartile) FROM '/mnt/ramdisk/tables/CourseOffers.table' DELIMITER ',' CSV HEADER;
+
+COPY TeacherAssignmentsToCourses(CourseOfferId, TeacherId) FROM '/mnt/ramdisk/tables/TeacherAssignmentsToCourses.table' DELIMITER ',' CSV HEADER;
+
+COPY StudentAssistants(CourseOfferId, StudentRegistrationId) FROM '/mnt/ramdisk/tables/StudentAssistants.table' DELIMITER ',' CSV HEADER;
+
+COPY CourseRegistrations(CourseOfferId, StudentRegistrationId, Grade) FROM '/mnt/ramdisk/tables/CourseRegistrations.table' DELIMITER ',' CSV HEADER;
 
 ANALYZE VERBOSE;
