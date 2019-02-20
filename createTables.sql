@@ -1,4 +1,28 @@
 -- Commands to create all tables needed for our database
+-- Degrees table
+CREATE UNLOGGED TABLE Degrees (
+    DegreeId INT,
+    Dept VARCHAR(50),
+    DegreeDescription VARCHAR(200),
+    TotalECTS SMALLINT
+);
+
+-- Students table
+CREATE UNLOGGED TABLE Students (
+    StudentId INT,
+    StudentName VARCHAR(50),
+    Address VARCHAR(200),
+    BirthyearStudent SMALLINT,
+    Gender CHAR
+);
+
+-- Student registrations to degrees table
+CREATE UNLOGGED TABLE StudentRegistrationsToDegrees (
+    StudentRegistrationId INT,
+    StudentId INT,
+    DegreeId INT,
+    RegistrationYear INT
+);
 
 -- Teacher table
 CREATE UNLOGGED TABLE Teachers (
