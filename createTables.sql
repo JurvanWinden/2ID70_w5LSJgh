@@ -24,6 +24,8 @@ CREATE UNLOGGED TABLE StudentRegistrationsToDegrees (
     RegistrationYear INT
 );
 
+
+
 -- Teacher table
 CREATE UNLOGGED TABLE Teachers (
     TeacherId INT,
