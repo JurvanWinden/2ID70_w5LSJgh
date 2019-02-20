@@ -8,6 +8,8 @@
 -- Don't forget to analyze at the end. It can make a difference in query performance.
 -- Example:
 
-COPY myPhonebook(id, name, address,phoneNumber) FROM '/mnt/ramdisk/tables/myphonebook.table' DELIMITER ',' CSV HEADER;
-
+COPY Degrees(DegreeId, Dept, DegreeDescription, TotalECTS) FROM '/mnt/ramdisk/tables/Degrees.table' DELIMITER ',' CSV HEADER;
+COPY Students(StudentId, StudentName, Address, BirthyearStudent, Gender) FROM '/mnt/ramdisk/tables/Students.table' DELIMITER ',' CSV HEADER;
+COPY StudentRegistrationToDegrees(StudentRegistrationId, StudentId, DegreeId, RegistrationYear) FROM '/mnt/ramdisk/tables/StudentRegistrationsToDegrees.table' DELIMITER ',' CSV HEADER;
+COPY Teachers(TeacherId, TeacherName, Address, BirthyearTeacher, Gender) FROM '/mnt/ramdisk/tables/Teachers.table' DELIMITER ',' CSV HEADER;
 ANALYZE VERBOSE;
