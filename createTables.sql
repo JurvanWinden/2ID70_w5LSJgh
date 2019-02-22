@@ -68,5 +68,5 @@ CREATE UNLOGGED TABLE StudentAssistants (
 CREATE UNLOGGED TABLE CourseRegistrations (
     CourseOfferId INT,
     StudentRegistrationId INT,
-    Grade SMALLINT
+    Grade SMALLINT NOT NULL DEFAULT 0
 );

@@ -7,10 +7,6 @@
 --   TeacherAssignmentsToCourses.table, Teachers.table
 -- Don't forget to analyze at the end. It can make a difference in query performance.
 
--- Define your path here for testing purposes...
-\set path '/home/jur/Documents/2ID70/tables-light/tables/';
--- DEFINE path = "/mnt/ramdisk/tables/"
-
 COPY Courses(CourseId, CourseName, CourseDescription, DegreeId, ECTS) FROM '/home/jur/Documents/2ID70/tables-light/tables/Courses.table' DELIMITER ',' CSV HEADER;
 
 COPY CourseOffers(CourseOfferId, CourseId, Year, Quartile) FROM '/home/jur/Documents/2ID70/tables-light/tables/CourseOffers.table' DELIMITER ',' CSV HEADER;
