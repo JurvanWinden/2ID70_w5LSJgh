@@ -1,37 +1,49 @@
 --The 8 queries to be answered
-SELECT AVG(Grade) FROM CourseRegistrations WHERE CourseRegistrations.StudentRegistrationId=3;
 
 -- Q2
-SELECT Students.StudentId, AVG(Grade) FROM Students, CourseRegistrations, StudentRegistrationsToDegrees
-WHERE Students.StudentId = StudentRegistrationsToDegrees.StudentId AND
-CourseRegistrations.StudentRegistrationId = StudentRegistrationsToDegrees.StudentRegistrationId
-
 -- Select all students that have completed a degree
-SELECT StudentRegistrationsToDegrees.StudentRegistrationID, Degrees.DegreeId FROM StudentRegistrationsToDegrees, Students, Degrees WHERE
-StudentRegistrationsToDegrees.StudentId = Students.StudentId AND
-Degrees.DegreeId = StudentRegistrationsToDegrees.DegreeId AND
-TotalECTS = 200;
+SELECT StudentRegistrationsToDegrees.StudentRegistrationID, Degrees.DegreeId FROM StudentRegistrationsToDegrees, Students, Degrees, Courses, CourseOffers, CourseRegistrations
+WHERE StudentRegistrationsToDegrees.StudentId = Students.StudentId
+AND Degrees.DegreeId = StudentRegistrationsToDegrees.DegreeId
+AND TotalECTS = 200
+AND Courses.DegreeId = StudentRegistrationsToDegrees.DegreeId
+AND CourseOffers.CourseId = Courses.CourseId
+AND CourseRegistrations.CourseOfferId = CourseOffers.CourseOfferId
+AND CourseRegistrations.Grade >= 5;
 
-SELECT AVG(Grade) FROM Students, CourseRegistrations WHERE CourseRegistrations.StudentRegistrationId;
+SELECT StudentRegistrationsToDegrees.StudentRegistrationId, CourseOffers.CourseOfferId, Grade FROM StudentRegistrationsToDegrees, CourseRegistrations, Courses, Degrees, CourseOffers
+WHERE StudentRegistrationsToDegrees.StudentRegistrationId = CourseRegistrations.StudentRegistrationId
+AND Courses.CourseId = CourseOffers.CourseId
+AND CourseRegistrations.CourseOfferId = CourseOffers.CourseOfferId
+AND StudentRegistrationsToDegrees.DegreeId = Courses.DegreeId
+AND Degrees.DegreeId = Courses.DegreeId
+AND Degrees.TotalECTS = 200
+AND NOT EGrade < 5
 
+--Q4 Give percentage of female students for all degrees of a department
+WITH StudentCount AS (
+    SELECT COUNT(Students.StudentId) AS SC FROM Degrees, StudentRegistrationsToDegrees, Students
+    WHERE Students.StudentId = StudentRegistrationsToDegrees.StudentId
+    AND StudentRegistrationsToDegrees.DegreeId = Degrees.DegreeId
+    AND Dept = 'be to thin'
+    GROUP BY Degrees.Dept
+),
+FemaleStudentCount AS (
+    SELECT COUNT(Students.StudentId) AS FSC FROM Degrees, StudentRegistrationsToDegrees, Students
+    WHERE Students.StudentId = StudentRegistrationsToDegrees.StudentId
+    AND StudentRegistrationsToDegrees.DegreeId = Degrees.DegreeId
+    AND Gender = 'F'
+    AND Degrees.Dept = 'be to thin' -- replace this with %1%
+    GROUP BY Degrees.Dept
+)
+SELECT (FSC / CAST(SC AS DECIMAL) * 100) AS Percentage FROM FemaleStudentCount, StudentCount;
 
-SELECT J.StudentId FROM CourseRegistrations
-    INNER JOIN (
-SELECT Students.StudentId, S.StudentRegistrationID FROM Students
-    INNER JOIN (
-        SELECT Students.StudentId, StudentRegistrationID, Degrees.DegreeId FROM StudentRegistrationsToDegrees, Students, Degrees WHERE
-        StudentRegistrationsToDegrees.StudentId = Students.StudentId AND
-        Degrees.DegreeId = StudentRegistrationsToDegrees.DegreeId AND
-        TotalECTS = 200
-    ) as S
- ON Students.StudentId = S.StudentId
- WHERE NOT EXISTS (
-     SELECT 1 FROM Courses, CourseOffers, CourseRegistrations
-     WHERE Courses.DegreeId = S.DegreeId AND
-     CourseOffers.CourseOfferId = CourseRegistrations.CourseOfferId AND
-     CourseRegistrations.StudentRegistrationId = S.StudentRegistrationId AND
-     CourseRegistrations.Grade < 5
- )
-) AS J
-ON CourseRegistrations.StudentRegistrationID = J.StudentRegistrationID;
-GROUP BY J.StudentId;
+--Q6
+
+-- Q8
+-- Count Students for each CourseOffer
+SELECT CourseRegistrations.CourseOfferId, COUNT(CourseRegistrations.StudentRegistrationId) as StudentCount FROM CourseRegistrations
+GROUP BY CourseRegistrations.CourseOfferId;
+-- Count StudentAssistants for each CourseOffer
+SELECT CourseOfferId, COUNT(StudentAssistants.StudentRegistrationId) as StudentAssistantCount FROM StudentAssistants
+GROUP BY StudentAssistants.CourseOfferId;
