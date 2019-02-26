@@ -15,7 +15,7 @@ COPY TeacherAssignmentsToCourses(CourseOfferId, TeacherId) FROM '/home/jur/Docum
 
 COPY StudentAssistants(CourseOfferId, StudentRegistrationId) FROM '/home/jur/Documents/2ID70/tables-light/tables/StudentAssistants.table' DELIMITER ',' CSV HEADER;
 
-COPY CourseRegistrations(CourseOfferId, StudentRegistrationId, Grade) FROM '/home/jur/Documents/2ID70/tables-light/tables/CourseRegistrations.table' DELIMITER ',' CSV HEADER;
+COPY CourseRegistrations(CourseOfferId, StudentRegistrationId, Grade) FROM '/home/jur/Documents/2ID70/tables-light/tables/CourseRegistrations.table' DELIMITER ',' NULL AS 'null' CSV HEADER;
 
 COPY Degrees(DegreeId, Dept, DegreeDescription, TotalECTS) FROM '/home/jur/Documents/2ID70/tables-light/tables/Degrees.table' DELIMITER ',' CSV HEADER;
 
