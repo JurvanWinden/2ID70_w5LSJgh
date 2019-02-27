@@ -9,7 +9,7 @@ WHERE 	StudentId = %1% AND DegreeId = %2% AND
 		cr.Grade > 5
 GROUP BY (co.Year, co.Quartile, co.CourseOfferId);
 
--- Q2
+-- Q2 Select all excellent students GPA high, no failed courses in a degree
 -- Select all students that have completed a degree
 SELECT StudentRegistrationsToDegrees.StudentRegistrationID, Degrees.DegreeId FROM StudentRegistrationsToDegrees, Students, Degrees, Courses, CourseOffers, CourseRegistrations
 WHERE StudentRegistrationsToDegrees.StudentId = Students.StudentId
@@ -50,10 +50,20 @@ FemaleStudentCount AS (
 )
 SELECT (FSC / CAST(SC AS DECIMAL) * 100) AS Percentage FROM FemaleStudentCount, StudentCount;
 
--- Q5
--- needed: passing per course offer, total number of students, without course drop outs
-
---Q6
+--Q6 excellent students 2.0, highest grade of each course, etc
+-- Runs in approx 53 seconds... is to be runned 3 times
+WITH BestGrades AS (
+    SELECT CourseOffers.CourseOfferId, MAX(Grade) AS Best FROM CourseOffers, CourseRegistrations
+    WHERE CourseOffers.CourseOfferId = CourseRegistrations.CourseOfferId
+    AND Year = 2018
+    AND Quartile = 1
+    GROUP BY CourseOffers.CourseOfferId
+)
+SELECT StudentId, COUNT(CourseRegistrations.StudentRegistrationId) AS NumberOfCoursesWhereExcellent FROM StudentRegistrationsToDegrees, CourseRegistrations, BestGrades
+WHERE CourseRegistrations.CourseOfferId = BestGrades.CourseOfferId
+AND StudentRegistrationsToDegrees.StudentRegistrationId = CourseRegistrations.StudentRegistrationId
+AND Grade = BestGrades.Best
+GROUP BY StudentId, CourseRegistrations.StudentRegistrationId;
 
 -- Q7
 SELECT DegreeId, BirthYearStudent, Gender, AVG(Grade)
@@ -65,6 +75,7 @@ WHERE 	cr.CourseOfferId = co.CourseOfferId AND
 GROUP BY CUBE(DegreeId, BirthYearStudent, Gender);
 
 -- Q8
+-- Q8 List all CourseOffers which did not have enough student assistants
 -- Count Students for each CourseOffer
 SELECT CourseRegistrations.CourseOfferId, COUNT(CourseRegistrations.StudentRegistrationId) as StudentCount FROM CourseRegistrations
 GROUP BY CourseRegistrations.CourseOfferId;
