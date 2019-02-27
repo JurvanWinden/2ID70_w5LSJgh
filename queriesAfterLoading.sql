@@ -15,3 +15,5 @@ AND StudentRegistrationsToDegrees.StudentRegistrationId = StudentAssistants.Stud
 AND StudentRegistrationsToDegrees.DegreeId = Degrees.DegreeId;
 
 SELECT AVG(Grade) FROM CourseRegistrations WHERE CourseRegistrations.StudentRegistrationId=3;
+
+-- total approx 12 seconds...
