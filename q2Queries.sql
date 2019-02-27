@@ -1,15 +1,6 @@
 --The 8 queries to be answered
 -- Q1
--- Runs in approx 9 seconds... to be runned 100 times
-SELECT CourseName, Grade
-FROM CourseRegistrations as cr, StudentRegistrationsToDegrees as sd, CourseOffers as co, Courses as c
-WHERE StudentId = 3831503 AND sd.DegreeId = 5123 -- replace this with %1%, %2%
-AND sd.StudentRegistrationId = cr.StudentRegistrationId
-AND cr.CourseOfferId = co.CourseOfferId
-AND co.CourseId = c.CourseId
-AND	cr.Grade > 5
-ORDER BY (co.Year, co.Quartile, co.CourseOfferId);
-
+-- Runs in approx 7 seconds... to be runned 100 times
 CREATE MATERIALIZED VIEW PassedCoursesPerDegree AS (
     SELECT StudentId, sd.DegreeId, CourseName, Grade
     FROM CourseRegistrations as cr, StudentRegistrationsToDegrees as sd, CourseOffers as co, Courses as c
@@ -21,18 +12,9 @@ CREATE MATERIALIZED VIEW PassedCoursesPerDegree AS (
     ORDER BY (co.Year, co.Quartile, co.CourseOfferId)
 );
 
-CREATE MATERIALIZED VIEW PassedCoursesPerDegree(StudentId, CourseId, Grade) AS (
-    SELECT StudentId, CourseId, Grade
-    FROM CourseRegistrations as cr, StudentRegistrationsToDegrees as sd, CourseOffers as co
-    WHERE sd.StudentRegistrationId = cr.StudentRegistrationId
-    AND cr.CourseOfferId = co.CourseOfferId
-    AND	cr.Grade > 5
-);
-
-
 SELECT CourseName, Grade
 FROM PassedCoursesPerDegree
-WHERE StudentId = 3831503 AND DegreeId = 5123;
+WHERE StudentId = 3831503 AND DegreeId = 5123; -- Replace this with %1% and %2%
 
 -- Q2 Select all excellent students GPA high, no failed courses in a degree
 -- Select all students that have completed a degree
