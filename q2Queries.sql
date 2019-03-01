@@ -1,43 +1,39 @@
---The 8 queries to be answered
--- Q1
--- Runs in approx 7 seconds... to be runned 100 times
-CREATE MATERIALIZED VIEW PassedCoursesPerDegree AS (
-    SELECT StudentId, sd.DegreeId, CourseName, Grade
-    FROM CourseRegistrations as cr, StudentRegistrationsToDegrees as sd, CourseOffers as co, Courses as c
-    WHERE sd.StudentRegistrationId = cr.StudentRegistrationId
-    AND c.DegreeId = sd.DegreeId
-    AND cr.CourseOfferId = co.CourseOfferId
-    AND co.CourseId = c.CourseId
-    AND	cr.Grade > 5
-    ORDER BY (co.Year, co.Quartile, co.CourseOfferId)
+-- Our views
+CREATE MATERIALIZED VIEW PassedCoursesPerStudent AS (
+    SELECT StudentId, C.CourseId, Grade, ECTS FROM Courses AS C, CourseOffers AS CO, CourseRegistrations AS CR, StudentRegistrationsToDegrees AS SD
+    WHERE CO.CourseOfferId = CR.CourseOfferId
+    AND SD.StudentRegistrationId = CR.StudentRegistrationId
+    AND CO.CourseId = C.CourseId
+    AND Grade >= 5
+    AND Grade IS NOT NULL
 );
 
-SELECT CourseName, Grade
-FROM PassedCoursesPerDegree
-WHERE StudentId = 3831503 AND DegreeId = 5123; -- Replace this with %1% and %2%
+CREATE MATERIALIZED VIEW StudentGPA AS (
+    SELECT StudentId, SUM(ECTS * Grade) / CAST (SUM(ECTS) AS DECIMAL) AS GPA FROM PassedCoursesPerStudent
+    GROUP BY StudentId
+);
+
+--The 8 queries to be answered
+-- Q1
+-- Runs in approx 3 seconds... (with MATERIALIZED view) to be runned 100 times total 5 min
+SELECT CourseName, Grade FROM PassedCoursesPerStudent AS P, Courses AS C
+WHERE P.StudentId = 3831503
+AND SD.DegreeId = 5123
+AND P.CourseId = C.CourseId;
 
 -- Q2 Select all excellent students GPA high, no failed courses in a degree
--- Select all students that have completed a degree
-SELECT StudentRegistrationsToDegrees.StudentRegistrationID, Degrees.DegreeId FROM StudentRegistrationsToDegrees, Students, Degrees, Courses, CourseOffers, CourseRegistrations
-WHERE StudentRegistrationsToDegrees.StudentId = Students.StudentId
-AND Degrees.DegreeId = StudentRegistrationsToDegrees.DegreeId
-AND TotalECTS = 200
-AND Courses.DegreeId = StudentRegistrationsToDegrees.DegreeId
-AND CourseOffers.CourseId = Courses.CourseId
-AND CourseRegistrations.CourseOfferId = CourseOffers.CourseOfferId
-AND CourseRegistrations.Grade >= 5;
-
-SELECT StudentRegistrationsToDegrees.StudentRegistrationId, CourseOffers.CourseOfferId, Grade FROM StudentRegistrationsToDegrees, CourseRegistrations, Courses, Degrees, CourseOffers
-WHERE StudentRegistrationsToDegrees.StudentRegistrationId = CourseRegistrations.StudentRegistrationId
-AND Courses.CourseId = CourseOffers.CourseId
-AND CourseRegistrations.CourseOfferId = CourseOffers.CourseOfferId
-AND StudentRegistrationsToDegrees.DegreeId = Courses.DegreeId
-AND Degrees.DegreeId = Courses.DegreeId
-AND Degrees.TotalECTS = 200
-AND NOT EGrade < 5
+-- Runs in approx 0.4 seconds with view to be runned 10 times
+SELECT StudentId FROM StudentGPA
+WHERE GPA >= 9.4;
 
 -- Q3
+-- Runs in approx x seconds... (with MATERIALIZED view)
 -- needed: all active students, percentage female
+
+-- Count active students
+SELECT DegreeId
+
+
 
 --Q4 Give percentage of female students for all degrees of a department
 -- Runs in approx 2.8 seconds... is to be runned 10 times
@@ -58,8 +54,21 @@ FemaleStudentCount AS (
 )
 SELECT (FSC / CAST(SC AS DECIMAL) * 100) AS Percentage FROM FemaleStudentCount, StudentCount;
 
---Q5
+--Q5 Give percentage of passed students of all courses over all courseoffers with passing grade %1%
+-- Runs in appox X seconds... to be runned 5 times
 
+WITH StudentCount AS (
+SELECT CourseId, COUNT(CR.StudentRegistrationId) AS SC FROM CourseOffers AS CO, CourseRegistrations AS CR
+WHERE CO.CourseOfferId = CR.CourseOfferId
+AND Grade IS NOT NULL
+GROUP BY CourseId
+),
+PassedStudentCount AS (
+SELECT CourseId, COUNT(StudentId) AS SC FROM PassedCoursesPerStudent AS P
+GROUP BY CourseId
+)
+SELECT PassedStudentCount.CourseId, (PSC / CAST(SC AS DECIMAL) * 100) AS Percentage FROM StudentCount, PassedStudentCount;
+WHERE PassedStudentCount.CourseId = StudentCount.CourseId;
 
 --Q6 excellent students 2.0, highest grade of each course, etc
 -- Runs in approx 53 seconds... is to be runned 3 times
@@ -85,15 +94,8 @@ AND cr.StudentRegistrationId = sd.StudentRegistrationId
 AND s.StudentId = sd.StudentId
 GROUP BY CUBE(sd.DegreeId, BirthYearStudent, Gender);
 
--- Q8
 -- Q8 List all CourseOffers which did not have enough student assistants
--- Count Students for each CourseOffer
-SELECT CourseRegistrations.CourseOfferId, COUNT(CourseRegistrations.StudentRegistrationId) as StudentCount FROM CourseRegistrations
-GROUP BY CourseRegistrations.CourseOfferId;
--- Count StudentAssistants for each CourseOffer
-SELECT CourseOfferId, COUNT(StudentAssistants.StudentRegistrationId) as StudentAssistantCount FROM StudentAssistants
-GROUP BY StudentAssistants.CourseOfferId;
-
+-- Runs in approx 107 seconds... to be runned 1 time
 WITH SC AS (SELECT CourseRegistrations.CourseOfferId, COUNT(CourseRegistrations.StudentRegistrationId) as StudentCount
 FROM CourseRegistrations
 GROUP BY CourseRegistrations.CourseOfferId
@@ -107,4 +109,8 @@ FROM Courses, CourseOffers, SC, AC
 WHERE SC.CourseOfferId = AC.CourseOfferId AND
 AC.CourseOfferId = CourseOffers.CourseOfferId AND
 CourseOffers.CourseId = Courses.CourseId AND
-(AC.StudentAssistantCount * 50 >= SC.StudentCount)
+(AC.StudentAssistantCount * 50 >= SC.StudentCount);
+
+
+
+GROUP BY StudentId
