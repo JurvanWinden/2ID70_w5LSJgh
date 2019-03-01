@@ -1,4 +1,5 @@
 -- Our views
+-- approx 1 minute
 CREATE MATERIALIZED VIEW PassedCoursesPerStudent AS (
     SELECT StudentId, C.CourseId, Grade, ECTS FROM Courses AS C, CourseOffers AS CO, CourseRegistrations AS CR, StudentRegistrationsToDegrees AS SD
     WHERE CO.CourseOfferId = CR.CourseOfferId
@@ -8,6 +9,7 @@ CREATE MATERIALIZED VIEW PassedCoursesPerStudent AS (
     AND Grade IS NOT NULL
 );
 
+-- approx 1 minute
 CREATE MATERIALIZED VIEW StudentGPA AS (
     SELECT StudentId, SUM(ECTS * Grade) / CAST (SUM(ECTS) AS DECIMAL) AS GPA FROM PassedCoursesPerStudent
     GROUP BY StudentId
@@ -27,13 +29,26 @@ SELECT StudentId FROM StudentGPA
 WHERE GPA >= 9.4;
 
 -- Q3
--- Runs in approx x seconds... (with MATERIALIZED view)
--- needed: all active students, percentage female
-
--- Count active students
-SELECT DegreeId
-
-
+-- Runs in approx 74 seconds... to be runned 1 time
+WITH ActiveStudents AS (
+    SELECT P.StudentId, D.DegreeId FROM StudentRegistrationsToDegrees AS SD, Degrees AS D, PassedCoursesPerStudent AS P, Courses AS C
+    WHERE P.StudentId = SD.StudentId
+    AND SD.DegreeId = D.DegreeId
+    AND P.CourseId = C.CourseId
+    AND D.DegreeId = C.DegreeId
+    GROUP BY P.StudentId, TotalECTS, D.DegreeId
+    HAVING SUM(P.ECTS) < TotalECTS
+),
+ActiveFemaleStudents AS (
+    SELECT A.DegreeId, COUNT(A.StudentId) AS Active FROM ActiveStudents AS A
+    INNER JOIN Students
+    ON Students.StudentId =  A.StudentId
+    WHERE Gender = 'F'
+    GROUP BY A.DegreeId
+)
+SELECT A.DegreeId, (AF.Active / CAST (COUNT(A.StudentId) AS DECIMAL) * 100) AS Percentage FROM ActiveStudents AS A, ActiveFemaleStudents AS AF
+WHERE A.DegreeId = AF.DegreeId
+GROUP BY A.DegreeId, AF.Active;
 
 --Q4 Give percentage of female students for all degrees of a department
 -- Runs in approx 2.8 seconds... is to be runned 10 times
@@ -55,7 +70,7 @@ FemaleStudentCount AS (
 SELECT (FSC / CAST(SC AS DECIMAL) * 100) AS Percentage FROM FemaleStudentCount, StudentCount;
 
 --Q5 Give percentage of passed students of all courses over all courseoffers with passing grade %1%
--- Runs in appox X seconds... to be runned 5 times
+-- Runs in appox 95 seconds... to be runned 5 times
 
 WITH StudentCount AS (
 SELECT CourseId, COUNT(CR.StudentRegistrationId) AS SC FROM CourseOffers AS CO, CourseRegistrations AS CR
@@ -64,11 +79,14 @@ AND Grade IS NOT NULL
 GROUP BY CourseId
 ),
 PassedStudentCount AS (
-SELECT CourseId, COUNT(StudentId) AS SC FROM PassedCoursesPerStudent AS P
+SELECT CourseId, COUNT(CR.StudentRegistrationId) AS PSC FROM CourseOffers AS CO, CourseRegistrations AS CR
+WHERE CO.CourseOfferId = CR.CourseOfferId
+AND Grade >= 5
+AND Grade IS NOT NULL
 GROUP BY CourseId
 )
-SELECT PassedStudentCount.CourseId, (PSC / CAST(SC AS DECIMAL) * 100) AS Percentage FROM StudentCount, PassedStudentCount;
-WHERE PassedStudentCount.CourseId = StudentCount.CourseId;
+SELECT PassedStudentCount.CourseId, (PSC / CAST(SC AS DECIMAL) * 100) AS Percentage FROM StudentCount, PassedStudentCount
+WHERE StudentCount.CourseId = PassedStudentCount.CourseId;
 
 --Q6 excellent students 2.0, highest grade of each course, etc
 -- Runs in approx 53 seconds... is to be runned 3 times
