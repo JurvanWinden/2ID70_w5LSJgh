@@ -93,3 +93,18 @@ GROUP BY CourseRegistrations.CourseOfferId;
 -- Count StudentAssistants for each CourseOffer
 SELECT CourseOfferId, COUNT(StudentAssistants.StudentRegistrationId) as StudentAssistantCount FROM StudentAssistants
 GROUP BY StudentAssistants.CourseOfferId;
+
+WITH SC AS (SELECT CourseRegistrations.CourseOfferId, COUNT(CourseRegistrations.StudentRegistrationId) as StudentCount
+FROM CourseRegistrations
+GROUP BY CourseRegistrations.CourseOfferId
+),
+AC AS (SELECT CourseOfferId, COUNT(StudentAssistants.StudentRegistrationId) as StudentAssistantCount
+FROM StudentAssistants
+GROUP BY StudentAssistants.CourseOfferId
+)
+SELECT Courses.CourseName, CourseOffers.Year, CourseOffers.Quartile
+FROM Courses, CourseOffers, SC, AC
+WHERE SC.CourseOfferId = AC.CourseOfferId AND
+AC.CourseOfferId = CourseOffers.CourseOfferId AND
+CourseOffers.CourseId = Courses.CourseId AND
+(AC.StudentAssistantCount * 50 >= SC.StudentCount)
