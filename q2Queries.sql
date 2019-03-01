@@ -89,19 +89,17 @@ SELECT PassedStudentCount.CourseId, (PSC / CAST(SC AS DECIMAL) * 100) AS Percent
 WHERE StudentCount.CourseId = PassedStudentCount.CourseId;
 
 --Q6 excellent students 2.0, highest grade of each course, etc
--- Runs in approx 53 seconds... is to be runned 3 times
+-- Runs in approx 21 seconds... is to be runned 3 times
 WITH BestGrades AS (
-    SELECT CourseOffers.CourseOfferId, MAX(Grade) AS Best FROM CourseOffers, CourseRegistrations
-    WHERE CourseOffers.CourseOfferId = CourseRegistrations.CourseOfferId
+    SELECT StudentId FROM CourseOffers AS CO, PassedCoursesPerStudent AS P
+    WHERE CO.CourseId = P.CourseId
     AND Year = 2018
     AND Quartile = 1
-    GROUP BY CourseOffers.CourseOfferId
+    GROUP BY StudentId, Grade
+    HAVING Grade = MAX(Grade)
 )
-SELECT StudentId, COUNT(CourseRegistrations.StudentRegistrationId) AS NumberOfCoursesWhereExcellent FROM StudentRegistrationsToDegrees, CourseRegistrations, BestGrades
-WHERE CourseRegistrations.CourseOfferId = BestGrades.CourseOfferId
-AND StudentRegistrationsToDegrees.StudentRegistrationId = CourseRegistrations.StudentRegistrationId
-AND Grade = BestGrades.Best
-GROUP BY StudentId, CourseRegistrations.StudentRegistrationId;
+SELECT StudentId, COUNT(StudentId) AS NumberOfCoursesWhereExcellent FROM BestGrades
+GROUP BY StudentId;
 
 -- Q7
 SELECT sd.DegreeId, BirthYearStudent, Gender, AVG(Grade)
