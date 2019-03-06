@@ -56,7 +56,7 @@ FemaleStudentCount AS (
     AND Degrees.Dept = 'be to thin' -- replace this with %1%
     GROUP BY Degrees.Dept
 )
-SELECT (FSC / CAST(SC AS DECIMAL) * 100) AS Percentage FROM FemaleStudentCount, StudentCount;
+SELECT (FSC / CAST(SC AS DECIMAL)) AS Percentage FROM FemaleStudentCount, StudentCount;
 
 --Q5 Give percentage of passed students of all courses over all courseoffers with passing grade %1%
 -- Runs in appox 95 seconds... to be runned 5 times
