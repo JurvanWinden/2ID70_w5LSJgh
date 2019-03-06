@@ -7,7 +7,7 @@
 --   TeacherAssignmentsToCourses.table, Teachers.table
 -- Don't forget to analyze at the end. It can make a difference in query performance.
 
-COPY Courses(CourseId, CourseName, CourseDescription, DegreeId, ECTS) FROM '/mnt/ramdisk/Courses.table' DELIMITER ',' CSV HEADER;
+COPY Courses(CourseId, CourseName, CourseDescription, DegreeId, ECTS) FROM '/mnt/ramdisk/tables/Courses.table' DELIMITER ',' CSV HEADER;
 
 COPY CourseOffers(CourseOfferId, CourseId, Year, Quartile) FROM '/mnt/ramdisk/tables/CourseOffers.table' DELIMITER ',' CSV HEADER;
 
