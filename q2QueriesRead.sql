@@ -3,7 +3,7 @@
 -- Runs in approx 3 seconds... (with MATERIALIZED view) to be runned 100 times total 5 min
 SELECT CourseName, Grade FROM PassedCoursesPerStudent AS P, Courses AS C
 WHERE P.StudentId = 3831503
-AND SD.DegreeId = 5123
+AND P.DegreeId = 5123
 AND P.CourseId = C.CourseId;
 
 -- Q2 Select all excellent students GPA high, no failed courses in a degree
