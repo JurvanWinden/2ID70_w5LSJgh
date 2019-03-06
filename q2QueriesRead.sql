@@ -34,7 +34,7 @@ WHERE A.DegreeId = AF.DegreeId
 GROUP BY A.DegreeId, AF.Active;
 
 --Q4 Give percentage of female students for all degrees of a department
--- Runs in approx 2.8 seconds... is to be runned 10 times
+-- Runs in approx 2.8 seconds... is to be runned 10 times CORRECT
 WITH StudentCount AS (
     SELECT COUNT(Students.StudentId) AS SC FROM Degrees, StudentRegistrationsToDegrees, Students
     WHERE Students.StudentId = StudentRegistrationsToDegrees.StudentId
@@ -109,7 +109,3 @@ WHERE SC.CourseOfferId = AC.CourseOfferId AND
 AC.CourseOfferId = CourseOffers.CourseOfferId AND
 CourseOffers.CourseId = Courses.CourseId AND
 (AC.StudentAssistantCount * 50 >= SC.StudentCount);
-
-
-
-GROUP BY StudentId
