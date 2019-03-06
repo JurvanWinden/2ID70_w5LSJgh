@@ -126,4 +126,4 @@ SELECT StudentId, COUNT(CourseRegistrations.StudentRegistrationId) AS NumberOfCo
 FROM StudentRegistrationsToDegrees, CourseRegistrations, BestGrades
 WHERE CourseRegistrations.CourseOfferId = BestGrades.CourseOfferId
 AND StudentRegistrationsToDegrees.StudentRegistrationId = CourseRegistrations.StudentRegistrationId
-AND Grade = BestGrades.Best GROUP BY StudentId HAVING COUNT(CourseRegistrations.StudentRegistrationId) >= 1;
+AND Grade = BestGrades.Best GROUP BY StudentId HAVING COUNT(CourseRegistrations.StudentRegistrationId) >= 1 ORDER BY StudentId, NumberOfCoursesWhereExcellent;
