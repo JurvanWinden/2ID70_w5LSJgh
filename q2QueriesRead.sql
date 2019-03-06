@@ -103,9 +103,10 @@ AC AS (SELECT CourseOfferId, COUNT(StudentAssistants.StudentRegistrationId) as S
 FROM StudentAssistants
 GROUP BY StudentAssistants.CourseOfferId
 )
-SELECT Courses.CourseName, CourseOffers.Year, CourseOffers.Quartile
+SELECT CourseOffers.CourseOfferId, Courses.CourseName, CourseOffers.Year, CourseOffers.Quartile
 FROM Courses, CourseOffers, SC, AC
 WHERE SC.CourseOfferId = AC.CourseOfferId AND
 AC.CourseOfferId = CourseOffers.CourseOfferId AND
 CourseOffers.CourseId = Courses.CourseId AND
-(AC.StudentAssistantCount * 50 >= SC.StudentCount);
+(AC.StudentAssistantCount * 50 >= SC.StudentCount)
+ORDER BY CourseOffers.CourseOfferId;
