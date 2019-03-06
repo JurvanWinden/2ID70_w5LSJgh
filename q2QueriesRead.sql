@@ -88,7 +88,7 @@ WITH BestGrades AS (
     HAVING Grade = MAX(Grade)
 )
 SELECT StudentId, COUNT(StudentId) AS NumberOfCoursesWhereExcellent FROM BestGrades
-GROUP BY StudentId;
+GROUP BY StudentId HAVING COUNT(StudentId) >= %1%;
 
 -- Q7
 SELECT sd.DegreeId, BirthYearStudent, Gender, AVG(Grade)
@@ -109,10 +109,20 @@ AC AS (SELECT CourseOfferId, COUNT(StudentAssistants.StudentRegistrationId) as S
 FROM StudentAssistants
 GROUP BY StudentAssistants.CourseOfferId
 )
-SELECT CourseOffers.CourseOfferId, Courses.CourseName, CourseOffers.Year, CourseOffers.Quartile
+SELECT Courses.CourseName, CourseOffers.Year, CourseOffers.Quartile
 FROM Courses, CourseOffers, SC, AC
 WHERE SC.CourseOfferId = AC.CourseOfferId AND
 AC.CourseOfferId = CourseOffers.CourseOfferId AND
 CourseOffers.CourseId = Courses.CourseId AND
-(AC.StudentAssistantCount * 50 < SC.StudentCount)
-ORDER BY CourseOffers.CourseOfferId;
+(AC.StudentAssistantCount * 50 <= SC.StudentCount)
+ORDER BY SC.CourseOfferId;
+
+SELECT CR.CourseOfferId, COUNT(SD.StudentId) as StudentCount
+FROM CourseRegistrations AS CR, StudentRegistrationsToDegrees AS SD
+WHERE SD.StudentRegistrationId = CR.StudentRegistrationId
+GROUP BY CR.CourseOfferId;
+
+SELECT CourseOfferId, COUNT(StudentAssistants.Student) as StudentAssistantCount
+FROM StudentAssistants, StudentRegistrationsToDegrees AS SD
+WHERE SD.StudentRegistrationId = StudentAssistants.StudentRegistrationId
+GROUP BY StudentAssistants.CourseOfferId;
