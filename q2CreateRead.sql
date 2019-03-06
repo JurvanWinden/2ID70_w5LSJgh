@@ -7,6 +7,16 @@ CREATE MATERIALIZED VIEW PassedCoursesPerStudent AS (
     AND CO.CourseId = C.CourseId
     AND Grade >= 5
     AND Grade IS NOT NULL
+    ORDER BY Year, Quartile, CO.CourseOfferId
+);
+
+CREATE MATERIALIZED VIEW PassedCoursesPerStudentRegistrationId AS (
+    SELECT SD.StudentRegistrationId, C.CourseId, CourseName, Grade, ECTS FROM Courses AS C, CourseOffers AS CO, CourseRegistrations AS CR, StudentRegistrationsToDegrees AS SD
+    WHERE CO.CourseOfferId = CR.CourseOfferId
+    AND SD.StudentRegistrationId = CR.StudentRegistrationId
+    AND CO.CourseId = C.CourseId
+    AND Grade >= 5
+    AND Grade IS NOT NULL
 );
 
 -- approx 1 minute

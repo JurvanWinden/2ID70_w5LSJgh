@@ -6,6 +6,12 @@ WHERE P.StudentId = 3831503
 AND P.DegreeId = 5123
 AND P.CourseId = C.CourseId;
 
+SELECT CourseName, Grade, SD.DegreeId FROM PassedCoursesPerStudentRegistrationId AS P, Courses AS C, StudentRegistrationsToDegrees as SD
+WHERE P.StudentRegistrationId = SD.StudentRegistrationId
+AND SD.StudentId = 3831503
+AND SD.DegreeId = 5123
+AND P.CourseId = C.CourseId;
+
 -- Q2 Select all excellent students GPA high, no failed courses in a degree
 -- Runs in approx 0.4 seconds with view to be runned 10 times
 SELECT StudentId FROM StudentGPA
