@@ -35,7 +35,7 @@ ActiveFemaleStudents AS (
     WHERE Gender = 'F'
     GROUP BY A.DegreeId
 )
-SELECT A.DegreeId, (AF.Active / CAST (COUNT(A.StudentId) AS DECIMAL) * 100) AS Percentage FROM ActiveStudents AS A, ActiveFemaleStudents AS AF
+SELECT A.DegreeId, (AF.Active / CAST (COUNT(A.StudentId) AS DECIMAL)) AS Percentage FROM ActiveStudents AS A, ActiveFemaleStudents AS AF
 WHERE A.DegreeId = AF.DegreeId
 GROUP BY A.DegreeId, AF.Active;
 
